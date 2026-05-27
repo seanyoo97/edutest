@@ -21,7 +21,7 @@ export const QUESTIONS = [
     id: 4,
     text: '한국전기설비규정(KEC)에 따른 접지시스템의 종류가 아닌 것은?',
     options: ['단독접지', '공통접지', '통합접지', '혼합접지', '특별접지'],
-    correctAnswerIndex: 4
+    correctAnswerIndex: 3
   },
   {
     id: 5,

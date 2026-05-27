@@ -1,6 +1,8 @@
 export interface Question {
   id: number;
   text: string;
+  image?: string;
+  boxContent?: string[];
   options: string[];
   correctAnswerIndex: number;
 }
@@ -178,7 +180,7 @@ export const COURSES: Course[] = [
       },
       {
         "id": 5,
-        "text": "안전대책으로 System을 설계하는 과정에서",
+        "text": "안전대책으로 System을 설계하는 과정에서 (    )와 Fool Proof의 개념이 기본적으로 포함되도록 하여야 한다. (    )에 해당하는 것은?",
         "options": [
           "Fail Safe",
           "Tamper Proof",
@@ -349,7 +351,7 @@ export const COURSES: Course[] = [
       },
       {
         "id": 10,
-        "text": "다음 BMS",
+        "text": "다음 BMS(배터리관리장치)의 주요 기능에 해당하는 것이 아닌 것은?",
         "options": [
           "배터리 셀발란싱",
           "배터리 전압/전류/온도 모니터링",
@@ -399,7 +401,7 @@ export const COURSES: Course[] = [
       },
       {
         "id": 4,
-        "text": "기본파의 n배",
+        "text": "기본파의 n배(정수배)의 주파수를 갖는 것으로 옳은 것은?",
         "options": [
           "고주파",
           "고조파",
@@ -410,7 +412,7 @@ export const COURSES: Course[] = [
       },
       {
         "id": 5,
-        "text": "고조파 전압",
+        "text": "고조파 전압(전류) 실효치와 기본파 전압(전류) 실효치의 比로서 나타내며, 고조파 발생의 정도를 나타내는 것은?",
         "options": [
           "THD",
           "TDD",
@@ -421,7 +423,7 @@ export const COURSES: Course[] = [
       },
       {
         "id": 6,
-        "text": "전류밀도가 표면에 밀집해 흐르는 현상은?",
+        "text": "전류밀도가 표면에 밀집해 흐르는 현상은? 이는 주파수가 높을수록 전기저항이 크게 됨을 말하는 것이다.",
         "options": [
           "압전효과",
           "조셉슨효과",
@@ -432,7 +434,7 @@ export const COURSES: Course[] = [
       },
       {
         "id": 7,
-        "text": "계통에 병렬로 연결되어 반대파형을 주입해 정현파에 가까운 파형을 유지하는 것은?",
+        "text": "계통에 병렬로 연결되어 고조파 부하에서 발생되는 전류를 센싱하고, 반대파형을 주입해 전원에 정현파에 가까운 파형을 유지하는 것으로 옳은 것은?",
         "options": [
           "수동필터",
           "능동필터",
@@ -465,7 +467,7 @@ export const COURSES: Course[] = [
       },
       {
         "id": 10,
-        "text": "뇌전자임펄스",
+        "text": "뇌전자임펄스(LEMP)에 대한 기본보호대책이 아닌 것은?",
         "options": [
           "접지와 본딩",
           "자기차폐와 배선경로",
@@ -504,7 +506,7 @@ export const COURSES: Course[] = [
       },
       {
         "id": 3,
-        "text": "방향성 지락계전기",
+        "text": "방향성 지락계전기(67G)의 설정항목이 아닌 것은?",
         "options": [
           "영상동작전류",
           "영상동작전압",
@@ -515,7 +517,8 @@ export const COURSES: Course[] = [
       },
       {
         "id": 4,
-        "text": "다음 표",
+        "text": "다음의 표를 보고 아날로그 보호계전기의 보호 협조시간의 기준은?",
+        "image": "/5-4.png",
         "options": [
           "0.1[sec]",
           "0.2[sec]",
@@ -537,7 +540,8 @@ export const COURSES: Course[] = [
       },
       {
         "id": 6,
-        "text": "아날로그 보호계전기",
+        "text": "다음은 아날로그 보호계전기 중 과전류 계전기(OCR, 50/51)의 사용 사진이다. 보기의 설명이 잘못된 것은?",
+        "image": "/5-6.png",
         "options": [
           "순시 탭은 30[A]이다.",
           "한시 요소의 동작 시험 중 300%는 6[A]이다.",
@@ -598,7 +602,14 @@ export const COURSES: Course[] = [
     "questions": [
       {
         "id": 1,
-        "text": "다음 중 비상발전기 자동운전절차순서가 옳은 것은? [㉠ 발전기 기동 / ㉡ 상용전원 정전 / ㉢ 저전압계전기",
+        "text": "다음 중 비상발전기 자동운전절차순서가 옳은 것은?",
+        "boxContent": [
+          "㉠ 발전기 기동",
+          "㉡ 상용전원 정전",
+          "㉢ 저전압계전기(UVR)동작",
+          "㉣ 발전기 주차단기(ACB) 투입",
+          "㉤ 상용전원 주차단기(VCB) 트립(Trip)"
+        ],
         "options": [
           "㉡-㉠-㉢-㉣-㉤",
           "㉡-㉤-㉣-㉠-㉢",
@@ -653,7 +664,7 @@ export const COURSES: Course[] = [
       },
       {
         "id": 6,
-        "text": "건물의 상용 전원",
+        "text": "건물의 상용 전원(한전)이 끊겼을 때, 중요 시설에 전력을 공급하기 위해 사용하는 장비는 무엇인가?",
         "options": [
           "보일러",
           "냉동기",
@@ -697,7 +708,7 @@ export const COURSES: Course[] = [
       },
       {
         "id": 10,
-        "text": "발전기 연료 탱크 관리 시 수분 발생",
+        "text": "발전기 연료 탱크 관리 시 수분 발생(결로)을 줄이기 위해 권장되는 방법은?",
         "options": [
           "연료를 바닥날 때까지 쓴다.",
           "연료를 항상 10% 이하로 유지한다.",

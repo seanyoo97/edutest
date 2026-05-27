@@ -300,8 +300,22 @@ export default function TraineeApp() {
               <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: qIndex * 0.05 }} key={q.id} className="bg-white p-5 sm:p-6 rounded-xl shadow-sm border border-gray-100 min-w-0">
                 <h3 className="text-base sm:text-lg font-bold text-[#1B2A4A] mb-4 flex gap-2 break-keep">
                   <span className="text-[#FF6B35] flex-shrink-0">Q{qIndex + 1}.</span> 
-                  <span className="break-words">{q.text}</span>
+                  <span className="break-words font-medium">{q.text}</span>
                 </h3>
+                {q.boxContent && (
+                  <div className="mb-5 p-4 rounded bg-gray-50 border border-gray-200">
+                    <ul className="space-y-1.5 text-sm sm:text-base text-gray-700 font-medium">
+                      {q.boxContent.map((item, i) => (
+                        <li key={i}>{item}</li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+                {q.image && (
+                  <div className="mb-4 rounded-lg overflow-hidden border border-gray-100 bg-gray-50 flex justify-center p-2">
+                    <img src={q.image} alt={`Question ${qIndex + 1} reference`} className="max-w-full max-h-64 object-contain" />
+                  </div>
+                )}
                 <div className="space-y-2 sm:space-y-3">
                   {q.options.map((option, oIndex) => {
                     const isSelected = answers[qIndex] === oIndex;
