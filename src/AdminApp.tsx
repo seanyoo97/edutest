@@ -8,7 +8,7 @@ import { motion } from 'motion/react';
 import { useNavigate } from 'react-router-dom';
 import { COURSES } from './constants';
 import * as XLSX from 'xlsx';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from 'recharts';
 
 export default function AdminApp() {
   const [responses, setResponses] = useState<AssessmentResponse[]>([]);
@@ -35,6 +35,17 @@ export default function AdminApp() {
   const [editAdminRole, setEditAdminRole] = useState('');
 
   const navigate = useNavigate();
+
+  const [modalState, setModalState] = useState<{ isOpen: boolean, title: string, message: string, type: 'alert'|'confirm', onConfirm?: () => void }>({ isOpen: false, title: '', message: '', type: 'alert' });
+
+  const customAlert = (message: string, title = '알림') => {
+    setModalState({ isOpen: true, title, message, type: 'alert' });
+  };
+
+  const customConfirm = (message: string, title = '확인', onConfirm: () => void) => {
+    setModalState({ isOpen: true, title, message, type: 'confirm', onConfirm });
+  };
+
 
   useEffect(() => {
     let unsubResponses: (() => void) | null = null;
@@ -83,7 +94,7 @@ export default function AdminApp() {
             } else {
               setIsAuthorized(false);
               auth.signOut();
-              alert("권한이 없습니다.");
+              customAlert("권한이 없습니다.");
               navigate('/');
             }
           }
@@ -131,7 +142,7 @@ export default function AdminApp() {
 
   const handleAddAdmin = async () => {
     if (!newAdminEmail || !newAdminName || !newAdminRole) {
-      alert("이메일, 이름, 직위를 모두 입력해주세요.");
+      customAlert("이메일, 이름, 직위를 모두 입력해주세요.");
       return;
     }
     setIsAddingAdmin(true);
@@ -144,10 +155,10 @@ export default function AdminApp() {
       setNewAdminEmail('');
       setNewAdminName('');
       setNewAdminRole('');
-      alert("관리자가 추가되었습니다.");
+      customAlert("관리자가 추가되었습니다.");
     } catch (e: any) {
       console.error(e);
-      alert('관리자 추가 오류: ' + e.message);
+      customAlert('관리자 추가 오류: ' + e.message);
     }
     setIsAddingAdmin(false);
   };
@@ -166,39 +177,39 @@ export default function AdminApp() {
         role: editAdminRole,
         createdAt: admins.find(a => a.email === editAdminEmail)?.createdAt || new Date().toISOString()
       });
-      alert('관리자 정보가 수정되었습니다.');
+      customAlert('관리자 정보가 수정되었습니다.');
       setEditAdminEmail(null);
     } catch(e) {
       console.error(e);
-      alert('오류가 발생했습니다.');
+      customAlert('오류가 발생했습니다.');
     }
   };
 
   const [selectedResponseIds, setSelectedResponseIds] = useState<string[]>([]);
 
   const handleDeleteResponse = async (id: string) => {
-    if (confirm("해당 응답을 삭제하시겠습니까?")) {
+    customConfirm("해당 응답을 삭제하시겠습니까?", "삭제 확인", async () => {
       try {
         await deleteDoc(doc(db, 'responses', id));
         setSelectedResponseIds(prev => prev.filter(i => i !== id));
       } catch (e) {
         console.error(e);
-        alert("삭제 중 오류가 발생했습니다.");
+        customAlert("삭제 중 오류가 발생했습니다.");
       }
-    }
+    });
   };
 
   const handleBatchDelete = async () => {
     if (selectedResponseIds.length === 0) return;
-    if (confirm(`선택한 ${selectedResponseIds.length}개의 응답을 삭제하시겠습니까?`)) {
+    customConfirm(`선택한 ${selectedResponseIds.length}개의 응답을 삭제하시겠습니까?`, "일괄 삭제 확인", async () => {
       try {
         await Promise.all(selectedResponseIds.map(id => deleteDoc(doc(db, 'responses', id))));
         setSelectedResponseIds([]);
       } catch (e) {
         console.error(e);
-        alert("일괄 삭제 중 오류가 발생했습니다.");
+        customAlert("일괄 삭제 중 오류가 발생했습니다.");
       }
-    }
+    });
   };
 
   const toggleSelectResponse = (id: string) => {
@@ -217,18 +228,18 @@ export default function AdminApp() {
 
   const handleDeleteAdmin = async (email: string) => {
     if (email === 'seanyoo97@gmail.com') {
-      alert("최고 관리자는 삭제할 수 없습니다.");
+      customAlert("최고 관리자는 삭제할 수 없습니다.");
       return;
     }
-    if (confirm(`${email} 관리자를 삭제하시겠습니까?`)) {
+    customConfirm(`${email} 관리자를 삭제하시겠습니까?`, "삭제 확인", async () => {
       try {
         await deleteDoc(doc(db, 'admins', email));
-        alert("삭제되었습니다.");
+        customAlert("삭제되었습니다.");
       } catch (e) {
         console.error(e);
-        alert("삭제 중 오류가 발생했습니다.");
+        customAlert("삭제 중 오류가 발생했습니다.");
       }
-    }
+    });
   };
 
   const updatePassword = (courseId: number, val: string) => {
@@ -249,10 +260,10 @@ export default function AdminApp() {
     setIsSavingPass(true);
     try {
       await setDoc(doc(db, 'settings', 'passwords'), passwords);
-      alert('비밀번호가 성공적으로 저장되었습니다.');
+      customAlert('비밀번호가 성공적으로 저장되었습니다.');
     } catch(e) {
       console.error(e);
-      alert('저장 중 오류가 발생했습니다.');
+      customAlert('저장 중 오류가 발생했습니다.');
     }
     setIsSavingPass(false);
   };
@@ -362,6 +373,36 @@ export default function AdminApp() {
 
   return (
     <div className="min-h-screen bg-[#F8F9FA]">
+      {modalState.isOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
+          <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="bg-white rounded-xl shadow-xl max-w-sm w-full p-6 text-center border-t-4 border-[#1B2A4A] relative">
+            <h3 className="text-xl font-bold text-[#1B2A4A] mb-2">{modalState.title}</h3>
+            <p className="text-gray-600 mb-6 font-medium whitespace-pre-wrap">{modalState.message}</p>
+            <div className="flex justify-center gap-3">
+              {modalState.type === 'confirm' && (
+                <button
+                  onClick={() => setModalState({ ...modalState, isOpen: false })}
+                  className="px-5 py-2.5 rounded-lg text-sm font-bold bg-gray-200 text-gray-700 hover:bg-gray-300 transition-colors"
+                >
+                  취소
+                </button>
+              )}
+              <button
+                onClick={() => {
+                  setModalState({ ...modalState, isOpen: false });
+                  if (modalState.type === 'confirm' && modalState.onConfirm) {
+                    modalState.onConfirm();
+                  }
+                }}
+                className="px-5 py-2.5 rounded-lg text-sm font-bold bg-[#1B2A4A] text-white hover:bg-[#2A4070] transition-colors"
+              >
+                확인
+              </button>
+            </div>
+          </motion.div>
+        </div>
+      )}
+
       <header className="bg-[#1B2A4A] text-white py-4 px-6 shadow-md flex justify-between items-center sticky top-0 z-20">
         <div className="flex items-center gap-4">
           <button onClick={() => navigate('/')} className="text-white/60 hover:text-white transition-colors" title="뒤로 가기">
@@ -415,14 +456,19 @@ export default function AdminApp() {
             {courseStats.length > 0 && (
               <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
                 <h2 className="font-bold text-[#1B2A4A] text-lg mb-6">과정별 평균 점수 현황</h2>
-                <div className="h-[300px] w-full">
+                <div className="h-[400px] w-full">
                   <ResponsiveContainer width="100%" height="100%">
-                    <BarChart data={courseStats} margin={{ top: 20, right: 30, left: 0, bottom: 5 }}>
+                    <BarChart data={courseStats} margin={{ top: 20, right: 30, left: 0, bottom: 80 }}>
                       <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E5E7EB" />
-                      <XAxis dataKey="courseName" axisLine={false} tickLine={false} tick={{fill: '#6B7280', fontSize: 11}} />
+                      <XAxis dataKey="courseName" axisLine={false} tickLine={false} tick={{fill: '#6B7280', fontSize: 11}} angle={-45} textAnchor="end" interval={0} />
                       <YAxis axisLine={false} tickLine={false} tick={{fill: '#6B7280', fontSize: 12}} domain={[0, 100]} />
                       <Tooltip cursor={{fill: '#F3F4F6'}} contentStyle={{borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)'}} />
-                      <Bar dataKey="avgScore" name="평균 점수" fill="#FF6B35" radius={[4, 4, 0, 0]} maxBarSize={50} />
+                      <Bar dataKey="avgScore" name="평균 점수" radius={[4, 4, 0, 0]} maxBarSize={50}>
+                        {courseStats.map((entry, index) => {
+                          const colors = ['#FF6B35', '#4F46E5', '#06B6D4', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6', '#EC4899', '#3B82F6', '#14B8A6'];
+                          return <Cell key={`cell-${index}`} fill={colors[index % colors.length]} />;
+                        })}
+                      </Bar>
                     </BarChart>
                   </ResponsiveContainer>
                 </div>
