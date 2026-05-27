@@ -1,0 +1,42 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Default Deny
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Global Helpers
+    function isSignedIn() { return request.auth != null; }
+    function isAdmin() { 
+      return isSignedIn() && 
+      request.auth.token.email_verified == true && 
+      exists(/databases/$(database)/documents/admins/$(request.auth.token.email)); 
+    }
+    function incoming() { return request.resource.data; }
+
+    function isValidResponse(data) {
+      return data.keys().hasAll(['score', 'answers', 'submittedAt', 'metaVersion']) &&
+             data.keys().size() == 4 &&
+             data.score is number &&
+             data.answers is list && data.answers.size() == 10 &&
+             data.submittedAt == request.time &&
+             data.metaVersion == 'v1.0';
+    }
+
+    match /responses/{responseId} {
+      // Anonymous users can create responses (as requested: "응답자용 평가 페이지 (로그인 불필요)")
+      // So no auth check for creation.
+      allow create: if isValidResponse(incoming());
+      
+      // Admins can read
+      allow read: if isAdmin();
+    }
+
+    match /admins/{adminId} {
+      allow read: if isSignedIn() && request.auth.token.email_verified == true && request.auth.token.email == adminId;
+      allow write: if false; // Only manual setup via console
+    }
+  }
+}

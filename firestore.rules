@@ -1,0 +1,48 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Default Deny
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Global Helpers
+    function isSignedIn() { return request.auth != null; }
+    function isAdmin() { 
+      return isSignedIn() && 
+      exists(/databases/$(database)/documents/admins/$(request.auth.token.email)); 
+    }
+    function incoming() { return request.resource.data; }
+
+    function isValidResponse(data) {
+      return data.keys().hasAll(['score', 'answers', 'submittedAt', 'metaVersion', 'courseId', 'courseName', 'evaluationType', 'studentName', 'seatNumber']) &&
+             data.keys().size() == 9 &&
+             data.score is number &&
+             data.answers is list &&
+             data.courseId is number &&
+             data.courseName is string &&
+             data.evaluationType in ['1차', '2차'] &&
+             data.studentName is string &&
+             data.seatNumber is string &&
+             data.submittedAt == request.time &&
+             data.metaVersion == 'v1.2';
+    }
+
+    match /responses/{responseId} {
+      allow create: if isValidResponse(incoming());
+      allow read: if isAdmin();
+      allow delete: if isAdmin();
+    }
+
+    match /settings/{document} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    match /admins/{adminId} {
+      allow read: if isAdmin() || (isSignedIn() && request.auth.token.email == adminId);
+      allow write: if isAdmin() || (isSignedIn() && request.auth.token.email == adminId && request.auth.token.email == 'seanyoo97@gmail.com');
+    }
+  }
+}

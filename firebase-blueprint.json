@@ -1,0 +1,33 @@
+{
+  "entities": {
+    "Response": {
+      "title": "Response",
+      "description": "A trainee's response to the assessment",
+      "type": "object",
+      "properties": {
+        "score": { "type": "number", "description": "Total score out of 100" },
+        "answers": { "type": "array", "description": "Array of numbers representing selected answers" },
+        "submittedAt": { "type": "string", "format": "date-time" },
+        "metaVersion": { "type": "string" }
+      },
+      "required": ["score", "answers", "submittedAt", "metaVersion"]
+    },
+    "Admin": {
+      "title": "Admin",
+      "description": "Authorized admin users",
+      "type": "object",
+      "properties": {},
+      "required": []
+    }
+  },
+  "firestore": {
+    "/responses/{responseId}": {
+      "schema": { "$ref": "#/entities/Response" },
+      "description": "Trainee responses"
+    },
+    "/admins/{adminId}": {
+      "schema": { "$ref": "#/entities/Admin" },
+      "description": "Admin configuration"
+    }
+  }
+}
