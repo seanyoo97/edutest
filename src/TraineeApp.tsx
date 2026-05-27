@@ -311,6 +311,32 @@ export default function TraineeApp() {
                     </ul>
                   </div>
                 )}
+                {q.tableContent && (
+                  <div className="mb-5 overflow-x-auto">
+                    <table className="w-full border-collapse border border-gray-200 text-sm sm:text-base text-left">
+                      <thead className="bg-gray-50">
+                        <tr>
+                          {q.tableContent.headers.map((header, i) => (
+                            <th key={i} className="border border-gray-200 px-4 py-2 font-semibold text-gray-700 whitespace-nowrap">
+                              {header}
+                            </th>
+                          ))}
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {q.tableContent.rows.map((row, i) => (
+                          <tr key={i} className="hover:bg-gray-50">
+                            {row.map((cell, j) => (
+                              <td key={j} className="border border-gray-200 px-4 py-2 text-gray-600 whitespace-nowrap">
+                                {cell}
+                              </td>
+                            ))}
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
                 {q.image && (
                   <div className="mb-4 rounded-lg overflow-hidden border border-gray-100 bg-gray-50 flex justify-center p-2">
                     <img src={q.image} alt={`Question ${qIndex + 1} reference`} className="max-w-full max-h-64 object-contain" />
