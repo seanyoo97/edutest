@@ -1,6 +1,6 @@
 {
-  "name": "",
-  "description": "",
+  "name": "전기안전 평가 시스템",
+  "description": "전기안전 관련 문제를 풀고 평가하는 시스템입니다.",
   "requestFramePermissions": [],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }
